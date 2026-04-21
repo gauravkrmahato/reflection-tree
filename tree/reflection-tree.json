@@ -1,0 +1,296 @@
+{
+  "meta": {
+    "title": "The Daily Reflection Tree",
+    "version": "1.0.0",
+    "description": "An end-of-day reflection tool. Walks a person through three questions of self-awareness — about agency, contribution, and who they had in mind today. Fully deterministic. No LLM at runtime.",
+    "axes": ["locus", "orientation", "radius"]
+  },
+  "startNode": "START",
+  "nodes": [
+    {
+      "id": "START",
+      "type": "start",
+      "text": "Hey. Before you shut the laptop — want to spend five minutes looking at today with me? No right answers here. Just honest ones.",
+      "next": "A1_OPEN"
+    },
+
+    {
+      "id": "A1_OPEN",
+      "type": "question",
+      "axis": "locus",
+      "text": "If today had a weather forecast, what would it be?",
+      "options": [
+        { "label": "Clear skies — things mostly went well", "next": "A1_Q_AGENCY_HIGH", "signal": "axis1:internal" },
+        { "label": "Partly cloudy — some wins, some stumbles", "next": "A1_Q_AGENCY_MIXED" },
+        { "label": "Storms — got hit by stuff I didn't see coming", "next": "A1_Q_AGENCY_LOW", "signal": "axis1:external" },
+        { "label": "Fog — honestly not even sure what happened", "next": "A1_Q_AGENCY_LOW", "signal": "axis1:external" }
+      ]
+    },
+
+    {
+      "id": "A1_Q_AGENCY_HIGH",
+      "type": "question",
+      "axis": "locus",
+      "text": "Good day. When something went well — what made it go well?",
+      "options": [
+        { "label": "I'd prepped for it. Past-me set present-me up.", "next": "A1_R_INTERNAL", "signal": "axis1:internal" },
+        { "label": "I read the moment and adjusted", "next": "A1_R_INTERNAL", "signal": "axis1:internal" },
+        { "label": "The team carried it. I was kind of along for the ride.", "next": "A1_R_EXTERNAL", "signal": "axis1:external" },
+        { "label": "Honestly, it just… worked out", "next": "A1_R_EXTERNAL", "signal": "axis1:external" }
+      ]
+    },
+
+    {
+      "id": "A1_Q_AGENCY_MIXED",
+      "type": "question",
+      "axis": "locus",
+      "text": "Think about the part that stumbled. What was your first instinct?",
+      "options": [
+        { "label": "Ask myself what I could've done differently", "next": "A1_R_INTERNAL", "signal": "axis1:internal" },
+        { "label": "Try something else, fast", "next": "A1_R_INTERNAL", "signal": "axis1:internal" },
+        { "label": "Feel frustrated at the situation", "next": "A1_R_EXTERNAL", "signal": "axis1:external" },
+        { "label": "Wait for someone to tell me what to do", "next": "A1_R_EXTERNAL", "signal": "axis1:external" }
+      ]
+    },
+
+    {
+      "id": "A1_Q_AGENCY_LOW",
+      "type": "question",
+      "axis": "locus",
+      "text": "Rough one. When it got hard — where did your attention go first?",
+      "options": [
+        { "label": "To what was still in my control, even if tiny", "next": "A1_R_INTERNAL", "signal": "axis1:internal" },
+        { "label": "To whoever or whatever caused it", "next": "A1_R_EXTERNAL", "signal": "axis1:external" },
+        { "label": "To just pushing through alone", "next": "A1_R_EXTERNAL", "signal": "axis1:external" },
+        { "label": "To feeling stuck", "next": "A1_R_EXTERNAL", "signal": "axis1:external" }
+      ]
+    },
+
+    {
+      "id": "A1_R_INTERNAL",
+      "type": "reflection",
+      "axis": "locus",
+      "text": "Notice something: you just described today through what *you* did. Even the hard parts. That's not bragging — that's agency. Most days aren't won or lost. They're navigated. And it sounds like you had your hands on the wheel.",
+      "next": "A1_D_BRIDGE"
+    },
+
+    {
+      "id": "A1_R_EXTERNAL",
+      "type": "reflection",
+      "axis": "locus",
+      "text": "A hard day pulls your eyes outward — toward what others did, or didn't do. That's fair. Some things really are outside you. But tucked inside every rough hour, there's usually one small call only you could make. A message you sent. A pause you took. A door you opened. See if you can find yours.",
+      "next": "A1_D_BRIDGE"
+    },
+
+    {
+      "id": "A1_D_BRIDGE",
+      "type": "decision",
+      "text": "",
+      "conditions": [
+        { "if": "axis1.internal >= axis1.external", "next": "BRIDGE_1_TO_2_STRONG" },
+        { "else": true, "next": "BRIDGE_1_TO_2_SOFT" }
+      ]
+    },
+
+    {
+      "id": "BRIDGE_1_TO_2_STRONG",
+      "type": "bridge",
+      "text": "Okay — you've looked at how you handled today. Now let's flip the camera around: what did you put out into it?",
+      "next": "A2_OPEN"
+    },
+
+    {
+      "id": "BRIDGE_1_TO_2_SOFT",
+      "type": "bridge",
+      "text": "Let's shift the frame. When a day feels heavy, it's easy to only count what hit you. Let's look the other direction — what came *out* of you today?",
+      "next": "A2_OPEN"
+    },
+
+    {
+      "id": "A2_OPEN",
+      "type": "question",
+      "axis": "orientation",
+      "text": "Pick one real interaction from today. Which one of these fits it best?",
+      "options": [
+        { "label": "I helped someone with something that wasn't my job", "next": "A2_Q_CONTRIB_DEEP", "signal": "axis2:contribution" },
+        { "label": "I did something extra no one asked for", "next": "A2_Q_CONTRIB_DEEP", "signal": "axis2:contribution" },
+        { "label": "I felt I deserved more credit than I got", "next": "A2_Q_ENTITLE_DEEP", "signal": "axis2:entitlement" },
+        { "label": "I felt others weren't pulling their weight", "next": "A2_Q_ENTITLE_DEEP", "signal": "axis2:entitlement" },
+        { "label": "Honestly, I was just trying to survive today", "next": "A2_Q_NEUTRAL_DEEP" }
+      ]
+    },
+
+    {
+      "id": "A2_Q_CONTRIB_DEEP",
+      "type": "question",
+      "axis": "orientation",
+      "text": "Okay, be honest with yourself — what was underneath that effort?",
+      "options": [
+        { "label": "I just wanted to help", "next": "A2_R_CONTRIBUTION", "signal": "axis2:contribution" },
+        { "label": "It felt like the right thing, even if no one saw", "next": "A2_R_CONTRIBUTION", "signal": "axis2:contribution" },
+        { "label": "Kind of hoped someone would notice", "next": "A2_R_MIXED", "signal": "axis2:entitlement" },
+        { "label": "Wanted to look like a team player", "next": "A2_R_MIXED", "signal": "axis2:entitlement" }
+      ]
+    },
+
+    {
+      "id": "A2_Q_ENTITLE_DEEP",
+      "type": "question",
+      "axis": "orientation",
+      "text": "Sit with that feeling for a second. What's the actual shape of it?",
+      "options": [
+        { "label": "I worked hard and no one noticed — that stings", "next": "A2_R_ENTITLEMENT", "signal": "axis2:entitlement" },
+        { "label": "I compared my effort to theirs and felt cheated", "next": "A2_R_ENTITLEMENT", "signal": "axis2:entitlement" },
+        { "label": "I wanted to say something but didn't", "next": "A2_R_MIXED" },
+        { "label": "Honestly, maybe I gave less than I think too", "next": "A2_R_CONTRIBUTION", "signal": "axis2:contribution" }
+      ]
+    },
+
+    {
+      "id": "A2_Q_NEUTRAL_DEEP",
+      "type": "question",
+      "axis": "orientation",
+      "text": "Survival days are real. Even on those — did any small giving still slip through?",
+      "options": [
+        { "label": "Yeah — a kind message, quick help, something small", "next": "A2_R_CONTRIBUTION", "signal": "axis2:contribution" },
+        { "label": "Nope, I was heads-down the whole time", "next": "A2_R_MIXED" },
+        { "label": "Honestly can't remember — was on autopilot", "next": "A2_R_MIXED" }
+      ]
+    },
+
+    {
+      "id": "A2_R_CONTRIBUTION",
+      "type": "reflection",
+      "axis": "orientation",
+      "text": "What you just described is the thing that keeps teams alive — effort that doesn't wait for applause. It's easy to miss how rare that is, because by definition no one claps for it. But you gave something today that won't show up on any scoreboard. Worth naming, at least to yourself.",
+      "next": "A2_D_BRIDGE"
+    },
+
+    {
+      "id": "A2_R_ENTITLEMENT",
+      "type": "reflection",
+      "axis": "orientation",
+      "text": "Feeling unseen is real, and dismissing that feeling is its own kind of lie. But here's the question worth sitting with: is the measure *what I gave*, or *what I got back*? Both feelings live in the same chest. The trick is noticing which one is louder — and why.",
+      "next": "A2_D_BRIDGE"
+    },
+
+    {
+      "id": "A2_R_MIXED",
+      "type": "reflection",
+      "axis": "orientation",
+      "text": "Most days aren't pure giving or pure taking — they're tangled. Motives are mixed. Effort is half-seen. That's a human day. Naming the tangle honestly is already a kind of clarity.",
+      "next": "A2_D_BRIDGE"
+    },
+
+    {
+      "id": "A2_D_BRIDGE",
+      "type": "decision",
+      "text": "",
+      "conditions": [
+        { "if": "axis2.contribution > axis2.entitlement", "next": "BRIDGE_2_TO_3_STRONG" },
+        { "else": true, "next": "BRIDGE_2_TO_3_SOFT" }
+      ]
+    },
+
+    {
+      "id": "BRIDGE_2_TO_3_STRONG",
+      "type": "bridge",
+      "text": "You've looked at how you handled today, and what you gave. One last zoom-out: beyond you — who else was actually in the frame?",
+      "next": "A3_OPEN"
+    },
+
+    {
+      "id": "BRIDGE_2_TO_3_SOFT",
+      "type": "bridge",
+      "text": "One more shift. Today wasn't only yours — other people were inside it too, carrying their own quiet weather. Let's bring them in.",
+      "next": "A3_OPEN"
+    },
+
+    {
+      "id": "A3_OPEN",
+      "type": "question",
+      "axis": "radius",
+      "text": "Think about today's hardest moment. When you picture it — who's in the picture?",
+      "options": [
+        { "label": "Just me. It was my problem.", "next": "A3_Q_WIDEN", "signal": "axis3:self" },
+        { "label": "Me and one other person", "next": "A3_Q_WIDEN", "signal": "axis3:self" },
+        { "label": "My team — we were in it together", "next": "A3_Q_DEEPEN", "signal": "axis3:other" },
+        { "label": "Someone the work is actually for — a user, customer, peer downstream", "next": "A3_Q_DEEPEN", "signal": "axis3:other" }
+      ]
+    },
+
+    {
+      "id": "A3_Q_WIDEN",
+      "type": "question",
+      "axis": "radius",
+      "text": "Pull the camera back one more step — whose day did yours touch, even a tiny bit?",
+      "options": [
+        { "label": "A teammate who was counting on me", "next": "A3_R_WIDENED", "signal": "axis3:other" },
+        { "label": "Someone I lead or mentor", "next": "A3_R_WIDENED", "signal": "axis3:other" },
+        { "label": "A user or customer at the end of what I built", "next": "A3_R_WIDENED", "signal": "axis3:other" },
+        { "label": "Honestly? Not sure my day touched anyone else's", "next": "A3_R_STILL_SELF", "signal": "axis3:self" }
+      ]
+    },
+
+    {
+      "id": "A3_Q_DEEPEN",
+      "type": "question",
+      "axis": "radius",
+      "text": "For that person or group — what did today probably look like *from their side*?",
+      "options": [
+        { "label": "Harder than mine, honestly", "next": "A3_R_DEEPENED", "signal": "axis3:other" },
+        { "label": "Similar to mine — shared weight", "next": "A3_R_DEEPENED", "signal": "axis3:other" },
+        { "label": "Easier — they had support I didn't", "next": "A3_R_WIDENED", "signal": "axis3:self" },
+        { "label": "I haven't thought about it from their side", "next": "A3_R_WIDENED" }
+      ]
+    },
+
+    {
+      "id": "A3_R_DEEPENED",
+      "type": "reflection",
+      "axis": "radius",
+      "text": "There's a quiet kind of relief in remembering you're not the only one carrying something. Not because your weight shrinks — but because the world around it gets bigger. That's the grown-up version of not-alone.",
+      "next": "SUMMARY"
+    },
+
+    {
+      "id": "A3_R_WIDENED",
+      "type": "reflection",
+      "axis": "radius",
+      "text": "Even small work ripples. A message you wrote, a call you took, a task you finished — it lands somewhere, in someone's day. You don't usually see the ripple. But it's there. Maybe tomorrow you'll catch one.",
+      "next": "SUMMARY"
+    },
+
+    {
+      "id": "A3_R_STILL_SELF",
+      "type": "reflection",
+      "axis": "radius",
+      "text": "Some days really do feel sealed off — just you, your screen, your task. That's not a failure. It's a signal. Tomorrow, try asking once: *who is this actually for?* The answer is usually closer than we think. We just don't look.",
+      "next": "SUMMARY"
+    },
+
+    {
+      "id": "SUMMARY",
+      "type": "summary",
+      "text": "Here's today in three frames:\n\n• On agency, you leaned {axis1.dominant}.\n• On giving, you leaned {axis2.dominant}.\n• On who you had in mind, you leaned {axis3.dominant}.\n\nThese aren't grades. Just mirrors. One thing worth sitting with before the laptop closes:\n\n{closing_prompt}",
+      "next": "END"
+    },
+
+    {
+      "id": "END",
+      "type": "end",
+      "text": "That's enough for one evening. Rest well. See you tomorrow."
+    }
+  ],
+
+  "closingPrompts": {
+    "internal_contribution_other": "You were in the driver's seat today *and* you drove for someone other than yourself. That combination is rarer than it sounds. Notice it.",
+    "internal_contribution_self": "You owned your day and you gave. Small nudge for tomorrow — see if you can point that giving at one specific person.",
+    "internal_entitlement_other": "You had agency today, but some of it went into keeping score. Tomorrow, try spending that same energy giving instead of measuring.",
+    "internal_entitlement_self": "Agency without generosity slowly turns into resentment. One small unasked-for gift tomorrow, and watch what shifts.",
+    "external_contribution_other": "Even on a day that felt done-to-you, you gave something — and you noticed someone else inside it. That's not small.",
+    "external_contribution_self": "You gave today, but the day felt like it happened to you. Tomorrow, try to find just one choice you made — any size — and name it to yourself.",
+    "external_entitlement_other": "Heavy day. But notice — you still saw other people inside it. That's the thread to pull tomorrow.",
+    "external_entitlement_self": "Today felt heavy and one-sided. That's a fair read. Tomorrow, tiny experiment: find one small thing you control, and one small thing you can offer. Come back tomorrow night and see."
+  }
+}
